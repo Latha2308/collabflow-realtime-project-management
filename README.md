@@ -13,6 +13,20 @@ The project showcases:
 - **Security fundamentals**: HttpOnly cookie authentication, role-based authorization, secure password storage
 - **Full-stack type safety**: Pydantic schemas on the backend, TypeScript interfaces on the frontend
 
+## Screenshots
+
+### Login Page
+![Login Page](docs/screenshots/01-login.png)
+*Secure authentication with HttpOnly cookie-based JWT sessions*
+
+### Kanban Board with Real-Time Collaboration
+![Kanban Board](docs/screenshots/02-board-overview.png)
+*Drag-and-drop task management across five workflow stages with live WebSocket updates*
+
+### Analytics Dashboard
+![Analytics Dashboard](docs/screenshots/04-analytics.png)
+*Project metrics, completion trends, and graph analysis showing task dependencies and critical paths*
+
 ## The Problem
 
 Coordinating work across a team requires visibility into what's being done, what's blocked, and what needs to happen next. Task dependencies create constraints—Task B can't start until Task A finishes—but tracking those relationships manually is error-prone. Real-time updates matter when multiple people are working on the same project: seeing changes as they happen reduces confusion and duplicate work.
