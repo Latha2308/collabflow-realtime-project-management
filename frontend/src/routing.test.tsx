@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route, Navigate, useNavigate, useParams, Link } f
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock auth store with controllable state
-let mockAuthState = {
+const mockAuthState = {
   isAuthenticated: true,
   isLoading: false,
   user: { id: '1', username: 'testuser', email: 'test@test.com', full_name: 'Test User' },
