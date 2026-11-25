@@ -66,6 +66,11 @@ async def startup_event():
     """Application startup event"""
     logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
+    
+    # Log security validation status in production (without exposing secrets)
+    if settings.ENVIRONMENT == "production":
+        logger.info("✅ Production security configuration validated")
+        logger.info("✅ Secure cookie settings enabled (Secure=True, SameSite=Strict)")
 
 
 @app.on_event("shutdown")

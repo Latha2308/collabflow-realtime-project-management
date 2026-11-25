@@ -6,7 +6,9 @@ services:
     container_name: collabflow-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-collabflow}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-collabflow_dev_password}
+      # WARNING: Default password is for LOCAL DEVELOPMENT ONLY
+      # For production deployment, set POSTGRES_PASSWORD in .env file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_only_not_for_production}
       POSTGRES_DB: ${POSTGRES_DB:-collabflow_db}
     ports:
       - "5433:5432"
@@ -24,8 +26,11 @@ services:
       dockerfile: Dockerfile
     container_name: collabflow-backend
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-collabflow}:${POSTGRES_PASSWORD:-collabflow_dev_password}@postgres:5432/${POSTGRES_DB:-collabflow_db}
-      SECRET_KEY: ${SECRET_KEY:-dev_secret_key_change_in_production}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-collabflow}:${POSTGRES_PASSWORD:-local_dev_only_not_for_production}@postgres:5432/${POSTGRES_DB:-collabflow_db}
+      # WARNING: Default SECRET_KEY is for LOCAL DEVELOPMENT ONLY
+      # For production deployment, set SECRET_KEY in .env file
+      # Generate secure key with: openssl rand -base64 64
+      SECRET_KEY: ${SECRET_KEY:-local_dev_only_insecure_key_min_64_chars_replace_in_production_now}
       ENVIRONMENT: ${ENVIRONMENT:-development}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5174,http://localhost:3000,http://frontend:5173,http://playwright:5173}
     ports:
