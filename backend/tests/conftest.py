@@ -52,13 +52,48 @@ def reset_database():
     Base.metadata.drop_all(bind=engine)
 
 
+class CSRFTestClient(TestClient):
+    """
+    Extended TestClient that automatically handles CSRF tokens.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._csrf_token = None
+    
+    def request(self, method, url, **kwargs):
+        """Override request to automatically include CSRF token for protected requests"""
+        # Add CSRF token header if we have one and it's a protected method
+        if self._csrf_token and method.upper() in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            # Don't add CSRF for login/register/logout endpoints (they are exempt or generate tokens)
+            exempt_paths = ['/auth/login', '/auth/register', '/auth/logout', '/health']
+            is_exempt = any(exempt in url for exempt in exempt_paths)
+            
+            if not is_exempt:
+                headers = kwargs.get('headers', {})
+                if headers is None:
+                    headers = {}
+                if isinstance(headers, dict):
+                    headers['X-CSRF-Token'] = self._csrf_token
+                    kwargs['headers'] = headers
+        
+        # Make the request
+        response = super().request(method, url, **kwargs)
+        
+        # Update CSRF token if set in response cookies
+        if 'csrf_token' in response.cookies:
+            self._csrf_token = response.cookies['csrf_token']
+        
+        return response
+
+
 @pytest.fixture(scope="function")
 def client():
     """
     Create a test client for each test.
-    The client uses the overridden database dependency.
+    The client uses the overridden database dependency and handles CSRF automatically.
     """
-    return TestClient(app)
+    return CSRFTestClient(app)
 
 
 @pytest.fixture(scope="function")

@@ -8,6 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api import auth, workspaces, projects, tasks, analytics
 from app.realtime import websocket
+from app.core.csrf import CSRFProtectionMiddleware
+from app.core.rate_limit import login_rate_limiter, register_rate_limiter
+from app.db.base import SessionLocal
 import logging
 
 # Configure logging
@@ -33,6 +36,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add CSRF protection middleware (must be after CORS)
+app.add_middleware(CSRFProtectionMiddleware)
 
 # Include API routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)
@@ -71,6 +77,20 @@ async def startup_event():
     if settings.ENVIRONMENT == "production":
         logger.info("✅ Production security configuration validated")
         logger.info("✅ Secure cookie settings enabled (Secure=True, SameSite=Strict)")
+        logger.info("✅ CSRF protection enabled")
+        logger.info("✅ Rate limiting enabled (login: 5/15min, register: 3/60min)")
+        logger.info("✅ Token revocation enabled (1 hour expiration)")
+    
+    # Clean up old rate limit records (older than 7 days)
+    db = SessionLocal()
+    try:
+        deleted_count = login_rate_limiter.cleanup_old_records(db, days_old=7)
+        if deleted_count > 0:
+            logger.info(f"Cleaned up {deleted_count} old rate limit records")
+    except Exception as e:
+        logger.error(f"Error cleaning up rate limit records: {e}")
+    finally:
+        db.close()
 
 
 @app.on_event("shutdown")

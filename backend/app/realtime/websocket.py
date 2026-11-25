@@ -6,7 +6,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.orm import Session
 from app.db.base import get_db
 from app.realtime.connection_manager import manager
-from app.core.security import decode_token
+from app.core.security import decode_token, is_token_revoked
 from app.models.user import User
 from app.models.project import Project
 from app.core.deps import check_workspace_access
@@ -18,9 +18,14 @@ router = APIRouter()
 
 
 async def get_user_from_token(token: str, db: Session) -> User:
-    """Authenticate user from token"""
+    """Authenticate user from token and check revocation"""
     payload = decode_token(token)
     if not payload:
+        return None
+    
+    # Check if token is revoked - pass db session
+    jti = payload.get("jti")
+    if not jti or is_token_revoked(jti, db):
         return None
     
     user_id = payload.get("sub")
@@ -74,6 +79,10 @@ async def websocket_endpoint(
     if origin:
         from app.core.config import settings
         allowed_origins = settings.get_cors_origins_list()
+        # In development, also allow connections from the backend's own host
+        # This allows testing tools to connect via localhost:8001
+        if settings.ENVIRONMENT == "development":
+            allowed_origins = allowed_origins + ["http://localhost:8001", "http://localhost:8000"]
         if origin not in allowed_origins:
             await websocket.close(code=1008, reason="Invalid origin")
             logger.warning(f"WebSocket connection rejected from origin: {origin}")

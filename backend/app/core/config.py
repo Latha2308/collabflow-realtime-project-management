@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # 1 hour (production-safe)
     
     ENVIRONMENT: str = "development"
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # Cookie settings
     COOKIE_SECURE: bool = False  # Override in production
     COOKIE_SAMESITE: str = "lax"  # Override in production to "strict"
-    COOKIE_MAX_AGE: int = 60 * 60 * 24 * 7  # 7 days
+    COOKIE_MAX_AGE: int = 60 * 60  # 1 hour (matches token expiration)
     
     def get_cors_origins_list(self) -> list[str]:
         """Get CORS origins as a list"""
