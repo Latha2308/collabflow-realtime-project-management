@@ -156,11 +156,8 @@ describe('React Router 7 - Route Parameters', () => {
 
 describe('React Router 7 - Navigation', () => {
   it('should support programmatic navigation with useNavigate', () => {
-    let navigateFn: ReturnType<typeof useNavigate> | null = null;
-
     function TestComponent() {
       const navigate = useNavigate();
-      navigateFn = navigate;
       
       return (
         <div>
@@ -182,7 +179,8 @@ describe('React Router 7 - Navigation', () => {
     );
 
     expect(screen.getByText('Current Page')).toBeInTheDocument();
-    expect(navigateFn).toBeDefined();
+    const button = screen.getByText('Navigate to Target');
+    expect(button).toBeInTheDocument();
   });
 
   it('should handle internal navigation paths safely', () => {
