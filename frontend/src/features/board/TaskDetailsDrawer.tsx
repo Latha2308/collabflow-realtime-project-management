@@ -23,8 +23,10 @@ export default function TaskDetailsDrawer({ task, open, onClose, projectId }: Ta
   const [selectedDependencyTask, setSelectedDependencyTask] = useState('')
   const [dependencyError, setDependencyError] = useState('')
 
+  // Sync local form state when task prop changes (valid pattern for form editing)
   useEffect(() => {
     if (task) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditedTask({
         title: task.title,
         description: task.description || '',
