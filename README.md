@@ -24,7 +24,7 @@ The project showcases:
 *Drag-and-drop task management across five workflow stages with live WebSocket updates*
 
 ### Analytics Dashboard
-![Analytics Dashboard](docs/screenshots/04-analytics.png)
+![Analytics Dashboard](docs/screenshots/03-analytics.png)
 *Project metrics, completion trends, and graph analysis showing task dependencies and critical paths*
 
 ## The Problem
@@ -78,7 +78,7 @@ Lower latency than polling. Browser automatically includes HttpOnly cookies in W
 Utility-first styling with pre-built accessible components. @dnd-kit provides drag-and-drop without external dependencies on React DnD.
 
 **Testing:** Pytest (backend), Vitest (frontend), Playwright (E2E)  
-44 backend tests cover API endpoints, graph algorithms, and WebSocket logic. 10 frontend tests cover stores and utilities.
+81 backend tests cover API endpoints, graph algorithms, WebSocket logic, security, and CSRF protection. 26 frontend tests cover stores, utilities, and API client behavior.
 
 ## Architecture
 
@@ -259,13 +259,13 @@ See `.env.example` for required variables. Docker Compose provides sensible defa
 
 ## Running Tests
 
-**Backend (44 tests):**
+**Backend (81 tests):**
 ```bash
 docker-compose exec backend pytest tests/ -v
 ```
-Covers authentication, authorization, task CRUD, dependency validation, graph algorithms, and WebSocket broadcasting.
+Covers authentication, authorization, task CRUD, dependency validation, graph algorithms, WebSocket broadcasting, security hardening, and CSRF protection.
 
-**Frontend (10 tests):**
+**Frontend (26 tests):**
 ```bash
 docker-compose exec frontend npm test -- --run
 ```
@@ -318,7 +318,7 @@ If two users drag the same task simultaneously, the first request succeeds and i
 - Task dependencies with cycle detection
 - Analytics dashboard with charts
 - Role-based access control
-- Automated tests (44 backend, 10 frontend)
+- Automated tests (81 backend, 26 frontend)
 - Docker Compose setup
 - GitHub Actions CI (backend and frontend tests)
 
